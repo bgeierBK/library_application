@@ -11,6 +11,8 @@ public class DVD extends Item {
         this.minutes = minutes;
     }
 
+
+
     public String getDirector() {
         return director;
     }
@@ -25,6 +27,16 @@ public class DVD extends Item {
 
     public void setMinutes(Integer minutes) {
         this.minutes = minutes;
+    }
+
+    public String toCSV() {
+        return String.format("%s,%d,%d,%s,%s,%d",
+                getTitle(),
+                getQuantity(),
+                getPublishedYear(),
+                getGenre(),
+                director,
+                minutes);
     }
 
     public String toString() {
