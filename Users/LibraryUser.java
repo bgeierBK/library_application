@@ -44,6 +44,28 @@ public class LibraryUser {
         this.passCode = passCode;
     }
 
+    public void checkOutItem(Item item) {
+        checkedOutItems.add(item);
+        item.decreaseQuantity();
+    }
+
+    public void returnItem(Item item) {
+        checkedOutItems.remove(item);
+        item.increaseQuantity();
+    }
+
+    public String toString(){
+        return this.firstName + " " + this.lastName;
+    }
+
+    public String toCSV() {
+        return String.format("%s,%s,%s,%d",
+                getFirstName(),
+                getLastName(),
+                getEmail(),
+                getPassCode());
+    }
+
 
 
 }

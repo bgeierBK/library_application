@@ -18,11 +18,23 @@ public class Book extends Item {
         return pages;
     }
 
+
+
     public void setAuthor(String author) {
         this.author = author;
     }
     public void setPages(Integer pages) {
         this.pages = pages;
+    }
+
+    public String toCSV() {
+        return String.format("%s,%d,%d,%s,%s,%d",
+                getTitle(),
+                getQuantity(),
+                getPublishedYear(),
+                getGenre(),
+                author,
+                pages);
     }
 
     public String toString() {

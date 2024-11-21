@@ -36,6 +36,10 @@ public abstract class Item {
         this.quantity++;
     }
 
+    public void decreaseQuantity() {
+        this.quantity--;
+    }
+
     public String getGenre() {
         return genre;
     }
