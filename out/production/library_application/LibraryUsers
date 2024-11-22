@@ -1,6 +1,7 @@
-John,Doe,john.doe@example.com,1234
-Jane,Smith,jane.smith@example.com,5678
-Michael,Brown,michael.brown@example.com,9101
-Emily,Davis,emily.davis@example.com,1122
-Chris,Johnson,chris.johnson@example.com,3344
-Stan,Mikita,stanm@blackhawks.com,1234
+John,Doe,john.doe@example.com,1234,false,The Great Gatsby|To Kill a Mockingbird,Twister
+Jane,Smith,jane.smith@example.com,5678,false,,
+Michael,Brown,michael.brown@example.com,9101,false,,
+Emily,Davis,emily.davis@example.com,1122,false,,
+Chris,Johnson,chris.johnson@example.com,3344,true,The Hobbit|To Kill a Mockingbird|Pride and Prejudice|Dune|The Hobbit|Dune,Twister|The Thing
+Stan,Mikita,stanm@blackhawks.com,1234,false,,
+Jimmy,John,jimmy@john.com,1234,false,,

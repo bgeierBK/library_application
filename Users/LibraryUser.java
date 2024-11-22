@@ -1,22 +1,27 @@
 package Users;
 import java.util.ArrayList;
 import Items.Item;
-
+import Items.Book;
+import Items.DVD;
 import java.util.List;
-import java.util.Random;
 
 public class LibraryUser {
     private String firstName;
     private String lastName;
     private String email;
     private Integer passCode;
-    private ArrayList<Item> checkedOutItems;
+    private boolean isadmin;
+    private ArrayList<Book> checkedOutBooks;
+    private ArrayList<DVD> checkedOutDVDs;
 
-    public LibraryUser(String firstName, String lastName, String email, Integer passCode) {
+    public LibraryUser(String firstName, String lastName, String email, Integer passCode, boolean isAdmin) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.passCode = passCode;
+        this.isadmin = isAdmin;
+        this.checkedOutBooks = new ArrayList<>();
+        this.checkedOutDVDs = new ArrayList<>();
     }
 
     public String getFirstName() {
@@ -28,6 +33,23 @@ public class LibraryUser {
     public String getLastName() {
         return lastName;
     }
+
+    public List<Book> getCheckedOutBooks() {
+        return checkedOutBooks;
+    }
+
+    public List<DVD> getCheckedOutDVDs() {
+        return checkedOutDVDs;
+    }
+
+    public Boolean getIsAdmin() {
+        return this.isadmin;
+    }
+
+    public void switchIsAdmin(Boolean isAdmin) {
+        this.isadmin = !isAdmin;
+    }
+
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
@@ -44,14 +66,26 @@ public class LibraryUser {
         this.passCode = passCode;
     }
 
-    public void checkOutItem(Item item) {
-        checkedOutItems.add(item);
-        item.decreaseQuantity();
+    public void checkOutBook(Book book) {
+        checkedOutBooks.add(book);
+
     }
 
-    public void returnItem(Item item) {
-        checkedOutItems.remove(item);
-        item.increaseQuantity();
+    public void returnBook(Book book) {
+        checkedOutBooks.remove(book);
+        book.increaseQuantity();
+
+    }
+
+    public void checkOutDVD(DVD dvd) {
+        checkedOutDVDs.add(dvd);
+
+    }
+
+    public void returnDVD(DVD dvd) {
+        checkedOutDVDs.remove(dvd);
+        dvd.increaseQuantity();
+
     }
 
     public String toString(){
@@ -59,11 +93,26 @@ public class LibraryUser {
     }
 
     public String toCSV() {
-        return String.format("%s,%s,%s,%d",
-                getFirstName(),
-                getLastName(),
-                getEmail(),
-                getPassCode());
+        StringBuilder csvLine = new StringBuilder();
+        csvLine.append(firstName)
+                .append(",")
+                .append(lastName)
+                .append(",")
+                .append(email)
+                .append(",")
+                .append(passCode)
+                .append(",")
+                .append(isadmin);
+
+
+        if (checkedOutBooks.isEmpty()) {
+            csvLine.append(",");
+        } else {
+            String booksCSV = String.join(",", checkedOutBooks.stream().map(Book::getTitle).toList());
+            csvLine.append(",").append(booksCSV);
+        }
+
+        return csvLine.toString();
     }
 
 
