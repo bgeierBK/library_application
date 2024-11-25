@@ -38,8 +38,20 @@ public class LibraryUser {
         return checkedOutBooks;
     }
 
+    public void printCheckedOutBooks() {
+        for (Book book : checkedOutBooks) {
+            System.out.println(book);
+        }
+    }
+
     public List<DVD> getCheckedOutDVDs() {
         return checkedOutDVDs;
+    }
+
+    public void printCheckedOutDVDs() {
+        for (DVD dvd : checkedOutDVDs) {
+            System.out.println(dvd);
+        }
     }
 
     public Boolean getIsAdmin() {

@@ -40,7 +40,7 @@ public class DVD extends Item {
     }
 
     public String toString() {
-        return super.toString() + "\nDirector: " + director + "\nMinutes: " + minutes;
+        return this.getTitle() + " directed by: " + director;
     }
 }
 

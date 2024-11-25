@@ -31,6 +31,18 @@ public class LibraryStock {
         return dvds;
     }
 
+    public void printBooks(){
+        for (Book book : books) {
+            System.out.println(book);
+        }
+    }
+
+    public void printDVDs(){
+        for (DVD dvd : dvds) {
+            System.out.println(dvd);
+        }
+    }
+
     public void addBook(Book book) {
         books.add(book);
     }
@@ -131,7 +143,7 @@ public class LibraryStock {
                     }
                 }
 
-                // Load checked-out DVDs
+
                 if (splitLine.length > 6 && !splitLine[6].isEmpty()) {
                     String[] dvdTitles = splitLine[6].split("\\|");
                     for (String title : dvdTitles) {

@@ -38,7 +38,7 @@ public class Book extends Item {
     }
 
     public String toString() {
-        return super.toString() + "\nAuthor: " + author + "\nPages: " + pages;
+        return this.getTitle() + " by " + author;
     }
 
 }

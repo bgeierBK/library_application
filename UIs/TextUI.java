@@ -13,24 +13,21 @@ public class TextUI {
     private String name;
     private LibraryStock libraryStock;
     private Scanner scanner;
+    LibraryUser activeUser;
 
     public TextUI(String name) {
         this.name = name;
         libraryStock = new LibraryStock();
         scanner = new Scanner(System.in);
+        LibraryUser activeUser = null;
     }
 
     public void display() throws IOException {
-        LibraryUser activeUser = null;
         libraryStock.addDVDsFromFile();
         libraryStock.addBooksFromFile();
         libraryStock.addUsersFromFile();
 
         System.out.println("Welcome to the " + name + " user interface. This program will let you complete all library functions");
-        System.out.println("Are you an existing user? Yes/No");
-        String answer = scanner.nextLine();
-
-        if (answer.equalsIgnoreCase("yes")) {
             boolean authenticated = false;
             while (!authenticated) {
                 System.out.println("Enter your e-mail address");
@@ -49,7 +46,7 @@ public class TextUI {
                     System.out.println("That is not a valid user. Please try again");
                 }
             }
-        }
+
         assert activeUser != null;
         if (activeUser.getIsAdmin()) {
             while (true) {
@@ -69,15 +66,13 @@ public class TextUI {
                 System.out.println("12. Exit");
                 Integer input = Integer.parseInt(scanner.nextLine());
                 if (input == 12) {
-                    libraryStock.saveBooksToFile();
-                    libraryStock.saveDVDsToFile();
-                    libraryStock.saveUsersToFile();
+                    this.close();
                     return;
                 } else if (input == 1) {
                     System.out.println("Name of book?");
                     String title = scanner.nextLine();
                     boolean bookExists = false;
-                    for (Book book : libraryStock.getBooks()) {
+                    for (Book book : LibraryStock.getBooks()) {
                         if (book.getTitle().equalsIgnoreCase(title)) {
 
                             System.out.println("A book with that title already exists. Would you like to add another copy? Yes/No");
@@ -86,7 +81,7 @@ public class TextUI {
                                 bookExists = true;
                                 System.out.println("Thanks! Returning to main menu.");
                                 book.increaseQuantity();
-                            } else if (answer.equalsIgnoreCase("no")) {
+                            } else if (response.equalsIgnoreCase("no")) {
                                 System.out.println("Ok. Returning ot main menu");
                                 bookExists = true;
 
@@ -127,8 +122,8 @@ public class TextUI {
                                 dvdExists = true;
                                 System.out.println("Thanks! Returning to main menu.");
                                 dvd.increaseQuantity();
-                            } else if (answer.equalsIgnoreCase("no")) {
-                                System.out.println("Ok. Returning ot main menu");
+                            } else if (reply.equalsIgnoreCase("no")) {
+                                System.out.println("Ok. Returning to main menu");
                                 dvdExists = true;
                             } else {
                                 System.out.println("That is not a valid option. Returning to main menu.");
@@ -174,121 +169,21 @@ public class TextUI {
                     System.out.println("You will be returned to the main menu");
                     continue;
                 } else if (input == 4) {
-                    System.out.println(libraryStock.getBooks());
+                    libraryStock.printBooks();
                 } else if (input == 5) {
-                    System.out.println(libraryStock.getDVDs());
+                    libraryStock.printDVDs();
                 } else if (input == 6) {
-                    System.out.println("Enter the title of the book");
-                    String title = scanner.nextLine();
-                    boolean bookExists = false;
-                    Book bookToCheckOut = null;
-
-
-                    while (true) {
-
-                        for (Book book : LibraryStock.getBooks()) {
-                            if (book.getTitle().equalsIgnoreCase(title)) {
-                                bookExists = true;
-                                bookToCheckOut = book;
-                                break;
-                            }
-                        }
-
-
-                        if (bookExists) {
-                            if (bookToCheckOut.getQuantity() > 0) {
-                                libraryStock.checkOutBooks(activeUser, bookToCheckOut);
-                                System.out.println("You have successfully checked out: " + bookToCheckOut.getTitle());
-                                break;
-                            }else{
-                                System.out.println("There are no copies of that book currently available. Try searching for another book");
-                                title = scanner.nextLine();
-                            }
-                        } else {
-                            System.out.println("That book is not in the library. Please try again.");
-                            title = scanner.nextLine();
-                        }
-                    }
+                    this.checkOutBook();
                 }else if(input == 7) {
-                    System.out.println("Enter the title of the DVD");
-                    String title = scanner.nextLine();
-                    boolean DVDExists = false;
-                    DVD DVDToCheckOut = null;
-
-
-                    while (true) {
-
-                        for (DVD dvd : LibraryStock.getDVDs()) {
-                            if (dvd.getTitle().equalsIgnoreCase(title)) {
-                                DVDExists = true;
-                                DVDToCheckOut = dvd;
-                                break;
-                            }
-                        }
-
-
-                        if (DVDExists) {
-                            if (DVDToCheckOut.getQuantity() > 0) {
-                                libraryStock.checkOutDVD(activeUser, DVDToCheckOut);
-                                System.out.println("You have successfully checked out: " + DVDToCheckOut.getTitle());
-                                break;
-                            }else{
-                                System.out.println("There are no copies of that DVD currently available. Try searching for another DVD");
-                                title = scanner.nextLine();
-                            }
-                        } else {
-                            System.out.println("That DVD is not in the library. Please try again.");
-                            title = scanner.nextLine();
-                        }
-                    }
+                   this.checkOutDVD();
                 }else if (input == 8) {
-                    System.out.println("Enter the title of the Book you are returning");
-                    String title = scanner.nextLine();
-                    boolean bookExists = false;
-                    Book bookToCheckIn = null;
-                    while (!bookExists) {
-                        for (Book book : activeUser.getCheckedOutBooks()) {
-                            if (book.getTitle().equalsIgnoreCase(title)) {
-                                bookExists = true;
-                                bookToCheckIn = book;
-                                break;
-                            }
-
-                        }
-                        if (!bookExists) {
-                            System.out.println("You don't have that book checked out. Try again");
-                            title = scanner.nextLine();
-                        }
-                    }
-                    activeUser.returnBook(bookToCheckIn);
-                    System.out.println("Book returned successfully");
+                    this.returnBook();
                 }else if (input == 9) {
-                    System.out.println("Enter the title of the DVD you are returning");
-                    String title = scanner.nextLine();
-                    boolean DVDExists = false;
-                    DVD DVDToCheckIn = null;
-                    while (!DVDExists) {
-                        for (DVD DVD : activeUser.getCheckedOutDVDs()) {
-                            if (DVD.getTitle().equalsIgnoreCase(title)) {
-                                DVDExists = true;
-                                DVDToCheckIn = DVD;
-                                break;
-                            }
-
-                        }
-                        if (!DVDExists) {
-                            System.out.println("You don't have that DVD checked out. Try again");
-                            title = scanner.nextLine();
-                        }
-                    }
-                    activeUser.returnDVD(DVDToCheckIn);
-                    System.out.println("DVD returned successfully");
+                    this.returnDVD();
                 } else if (input == 10) {
-                    System.out.println("Here are your checked out books");
-                    System.out.println(activeUser.getCheckedOutBooks());
+                    this.listBooks();
                 }else if (input == 11) {
-                    System.out.println("Here are your checked out DVDs");
-                    System.out.println(activeUser.getCheckedOutDVDs());
+                   this.listDVDs();
                 }
             }
         }else if(!activeUser.getIsAdmin()){
@@ -305,123 +200,172 @@ public class TextUI {
             System.out.println("9. Exit");
             Integer input = Integer.valueOf(scanner.nextLine());
             if (input == 9) {
-                libraryStock.saveBooksToFile();
-                libraryStock.saveDVDsToFile();
-                libraryStock.saveUsersToFile();
+                this.close();
                 return;
             }else if (input == 1) {
-                System.out.println(LibraryStock.getBooks());
+                libraryStock.printBooks();
             }else if (input == 2) {
-                System.out.println(LibraryStock.getDVDs());
+                libraryStock.printDVDs();
             }else if (input == 3) {
-                System.out.println("Enter the title of the book");
-                String title = scanner.nextLine();
-                boolean bookExists = false;
-                Book bookToCheckOut = null;
-                while (true) {
-                    for (Book book : LibraryStock.getBooks()) {
-                        if (book.getTitle().equalsIgnoreCase(title)) {
-                            bookExists = true;
-                            bookToCheckOut = book;
-                            break;
-                        }
-                    }
-                    if (bookExists) {
-                        if (bookToCheckOut.getQuantity() > 0) {
-                            libraryStock.checkOutBooks(activeUser, bookToCheckOut);
-                            System.out.println("You have successfully checked out: " + bookToCheckOut.getTitle());
-                            break;
-                        }else{
-                            System.out.println("There are no copies of that book currently available. Try searching for another book");
-                            title = scanner.nextLine();
-                            bookExists = false;
-                        }
-                    } else {
-                        System.out.println("That book is not in the library. Please try again.");
-                        title = scanner.nextLine();
-                    }
-                }
+                this.checkOutBook();
             }else if (input == 4) {
-                System.out.println("Enter the title of the DVD");
-                String title = scanner.nextLine();
-                boolean DVDExists = false;
-                DVD DVDToCheckOut = null;
-
-
-                while (true) {
-
-                    for (DVD dvd : LibraryStock.getDVDs()) {
-                        if (dvd.getTitle().equalsIgnoreCase(title)) {
-                            DVDExists = true;
-                            DVDToCheckOut = dvd;
-                            break;
-                        }
-                    }
-                    if (DVDExists) {
-                        if (DVDToCheckOut.getQuantity() > 0) {
-                            libraryStock.checkOutDVD(activeUser, DVDToCheckOut);
-                            System.out.println("You have successfully checked out: " + DVDToCheckOut.getTitle());
-                            break;
-                        }else{
-                            System.out.println("There are no copies of that DVD currently available. Try searching for another DVD");
-                            title = scanner.nextLine();
-                        }
-                    } else {
-                        System.out.println("That DVD is not in the library. Please try again.");
-                        title = scanner.nextLine();
-                    }
-                }
+                this.checkOutDVD();
             }else if (input == 5) {
-                System.out.println("Enter the title of the Book you are returning");
-                String title = scanner.nextLine();
-                boolean bookExists = false;
-                Book bookToCheckIn = null;
-                while (!bookExists) {
-                    for (Book book : activeUser.getCheckedOutBooks()) {
-                        if (book.getTitle().equalsIgnoreCase(title)) {
-                            bookExists = true;
-                            bookToCheckIn = book;
-                            break;
-                        }
-
-                    }
-                    if (!bookExists) {
-                        System.out.println("You don't have that book checked out. Try again");
-                        title = scanner.nextLine();
-                    }
-                }
-                activeUser.returnBook(bookToCheckIn);
-                System.out.println("Book returned successfully");
+                this.returnBook();
             }else if (input == 6) {
-                System.out.println("Enter the title of the DVD you are returning");
-                String title = scanner.nextLine();
-                boolean DVDExists = false;
-                DVD DVDToCheckIn = null;
-                while (!DVDExists) {
-                    for (DVD DVD : activeUser.getCheckedOutDVDs()) {
-                        if (DVD.getTitle().equalsIgnoreCase(title)) {
-                            DVDExists = true;
-                            DVDToCheckIn = DVD;
-                            break;
-                        }
-                    }
-                    if (!DVDExists) {
-                        System.out.println("You don't have that DVD checked out. Try again");
-                        title = scanner.nextLine();
+                this.returnDVD();
+            }else if (input == 7) {
+                this.listBooks();
+            }else if(input == 8){
+                this.listDVDs();
+            }
+            }
+        }
+        }
+
+        public void close() throws IOException {
+            libraryStock.saveBooksToFile();
+            libraryStock.saveDVDsToFile();
+            libraryStock.saveUsersToFile();
+        }
+
+        public void checkOutBook() throws IOException {
+            System.out.println("Enter the title of the book");
+            String title = scanner.nextLine();
+            boolean bookExists = false;
+            Book bookToCheckOut = null;
+
+
+            while (true) {
+
+                for (Book book : LibraryStock.getBooks()) {
+                    if (book.getTitle().equalsIgnoreCase(title)) {
+                        bookExists = true;
+                        bookToCheckOut = book;
+                        break;
                     }
                 }
-                activeUser.returnDVD(DVDToCheckIn);
-                System.out.println("DVD returned successfully");
-            }else if (input == 7) {
-                System.out.println("Here are your checked out books");
-                System.out.println(activeUser.getCheckedOutBooks());
-            }else if(input == 8){
+
+
+                if (bookExists) {
+                    if (bookToCheckOut.getQuantity() > 0) {
+                        libraryStock.checkOutBooks(activeUser, bookToCheckOut);
+                        System.out.println("You have successfully checked out: " + bookToCheckOut.getTitle());
+                        break;
+                    }else{
+                        System.out.println("There are no copies of that book currently available. Try searching for another book");
+                        title = scanner.nextLine();
+                    }
+                } else {
+                    System.out.println("That book is not in the library. Please try again.");
+                    title = scanner.nextLine();
+                }
+            }
+        }
+
+        public void checkOutDVD() throws IOException {
+            System.out.println("Enter the title of the DVD");
+            String title = scanner.nextLine();
+            boolean DVDExists = false;
+            DVD DVDToCheckOut = null;
+
+
+            while (true) {
+
+                for (DVD dvd : LibraryStock.getDVDs()) {
+                    if (dvd.getTitle().equalsIgnoreCase(title)) {
+                        DVDExists = true;
+                        DVDToCheckOut = dvd;
+                        break;
+                    }
+                }
+
+
+                if (DVDExists) {
+                    if (DVDToCheckOut.getQuantity() > 0) {
+                        libraryStock.checkOutDVD(activeUser, DVDToCheckOut);
+                        System.out.println("You have successfully checked out: " + DVDToCheckOut.getTitle());
+                        break;
+                    }else{
+                        System.out.println("There are no copies of that DVD currently available. Try searching for another DVD");
+                        title = scanner.nextLine();
+                    }
+                } else {
+                    System.out.println("That DVD is not in the library. Please try again.");
+                    title = scanner.nextLine();
+                }
+            }
+        }
+
+        public void returnBook() throws IOException {
+            System.out.println("Enter the title of the Book you are returning");
+            String title = scanner.nextLine();
+            boolean bookExists = false;
+            Book bookToCheckIn = null;
+            while (!bookExists) {
+                for (Book book : activeUser.getCheckedOutBooks()) {
+                    if (book.getTitle().equalsIgnoreCase(title)) {
+                        bookExists = true;
+                        bookToCheckIn = book;
+                        break;
+                    }
+
+                }
+                if (!bookExists) {
+                    System.out.println("You don't have that book checked out. Try again");
+                    title = scanner.nextLine();
+                }
+            }
+            activeUser.returnBook(bookToCheckIn);
+            System.out.println("Book returned successfully");
+        }
+
+        public void returnDVD() throws IOException {
+            System.out.println("Enter the title of the DVD you are returning");
+            String title = scanner.nextLine();
+            boolean DVDExists = false;
+            DVD DVDToCheckIn = null;
+            while (!DVDExists) {
+                for (DVD DVD : activeUser.getCheckedOutDVDs()) {
+                    if (DVD.getTitle().equalsIgnoreCase(title)) {
+                        DVDExists = true;
+                        DVDToCheckIn = DVD;
+                        break;
+                    }
+
+                }
+                if (!DVDExists) {
+                    System.out.println("You don't have that DVD checked out. Try again");
+                    title = scanner.nextLine();
+                }
+            }
+            activeUser.returnDVD(DVDToCheckIn);
+            System.out.println("DVD returned successfully");
+        }
+
+        public void listBooks() throws IOException {
+            if (activeUser.getCheckedOutBooks().isEmpty()) {
+                System.out.println("You have no checked out books");
+            }else {
+                System.out.println("Here are your checked out Books");
+                activeUser.printCheckedOutBooks();
+            }
+        }
+
+        public void listDVDs() throws IOException {
+            if (activeUser.getCheckedOutDVDs().isEmpty()) {
+                System.out.println("You have no checked out DVDs");
+            }else {
                 System.out.println("Here are your checked out DVDs");
-                System.out.println(activeUser.getCheckedOutDVDs());
+                activeUser.printCheckedOutDVDs();
             }
             }
-        }
-        }
+
+
 
     }
+
+
+
+
 
